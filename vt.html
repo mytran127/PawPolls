@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voting</title>
+    <style>
+        .container {
+            padding: 20px;
+        }
+        .vote-button {
+            margin: 5px;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <h2>Vote for Your Favorite Pet</h2>
+    <table>
+        <tr>
+        <td><img src="dog.jpeg" alt="Dog" ></td>
+        <td><img src="cat.jpeg" style="height: 220px;" alt="Cat" ></td>
+        <td><input type="text" id="writeInCandidate"></td>
+        </tr>
+        <tr>
+            <td>Dog</td>
+            <td>Cat</td>
+            <td>Write-in Pet</td>
+        </tr>
+        <tr>
+        <td><button class="vote-button" onclick="voteDog()">Vote</button></td>
+        <td><button class="vote-button" onclick="voteCat()">Vote</button></td>
+        <td><button class="vote-button" onclick="voteWriteIn()">Vote</button></td>
+        </tr>
+        <br>
+            
+    </table>
+
+    <hr>
+        <div id="results"></div>
+    </div>
+
+<script>
+
+var dogVotes = parseInt(localStorage.getItem('dogVotes') || '0');
+var catVotes = parseInt(localStorage.getItem('catVotes') || '0');
+var writeInCandidates = JSON.parse(localStorage.getItem('writeInCandidates')) || [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    displayVotes();
+});
+
+function voteDog() {
+    dogVotes += 1;
+    localStorage.setItem('dogVotes', dogVotes.toString());
+    displayVotes();
+
+}
+
+function voteCat() {
+    catVotes += 1;
+    localStorage.setItem('catVotes', catVotes.toString());
+    displayVotes();
+
+}
+
+function voteWriteIn() {
+    var candidateName = document.getElementById('writeInCandidate').value.trim();
+    if (candidateName) {
+        var candidateIndex = writeInCandidates.findIndex(c => c.name === candidateName);
+        if (candidateIndex === -1) {
+            
+            writeInCandidates.push({ name: candidateName, votes: 1 });
+        } else {
+            
+            writeInCandidates[candidateIndex].votes += 1;
+        }
+        localStorage.setItem('writeInCandidates', JSON.stringify(writeInCandidates));
+        displayVotes();
+
+    } else {
+        alert("Please enter the name of the write-in pet.");
+    }
+}
+
+function displayVotes() {
+    var resultsDiv = document.getElementById('results');
+    var writeInVotesDisplay = writeInCandidates.sort((a,b) => b.votes - a.votes).map(c => `${c.name}: ${c.votes}`).join('<br>');
+    resultsDiv.innerHTML = `<strong>Current Votes:</strong><br>Dog: ${dogVotes}<br>Cat: ${catVotes}<br>${writeInVotesDisplay || "None"}`;
+}
+</script>
